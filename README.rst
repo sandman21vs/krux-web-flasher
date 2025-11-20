@@ -146,7 +146,8 @@ Use a small Flask UI to flash firmware directly from the browser.
 .. code:: bash
 
     python -m pip install flask
-    python web_flasher.py
+    # recomenda-se usar python3 (ou `py -3` no Windows)
+    python3 web_flasher.py
     # open http://localhost:8000
 
 You can pick the firmware file (.bin or .kfpkg), refresh/choose the serial port (or auto-detect), select the board profile, tweak baudrate/flash type, and optionally boot from SRAM only.
