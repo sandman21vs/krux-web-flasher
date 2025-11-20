@@ -138,6 +138,19 @@ Execute user code directly in SRAM and view in serial terminal,
     # For `.bin` file
     python3 kflash.py -b 115200 -B goE -s -t hello_world.bin
 
+Web Flasher (experimental)
+--------------------------
+
+Use a small Flask UI to flash firmware directly from the browser.
+
+.. code:: bash
+
+    python -m pip install flask
+    python web_flasher.py
+    # open http://localhost:8000
+
+You can pick the firmware file (.bin or .kfpkg), refresh/choose the serial port (or auto-detect), select the board profile, tweak baudrate/flash type, and optionally boot from SRAM only.
+
 Requirements
 ------------
 

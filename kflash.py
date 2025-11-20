@@ -33,7 +33,7 @@ class KFlash:
         else:
             print(*args, **kwargs)
 
-    def process(self, terminal=True, dev="", baudrate=1500000, board=None, sram = False, file="", callback=None, noansi=False, terminal_auto_size=False, terminal_size=(50, 1), slow_mode = False):
+    def process(self, terminal=True, dev="", baudrate=1500000, board=None, sram = False, file="", callback=None, noansi=False, terminal_auto_size=False, terminal_size=(50, 1), slow_mode = False, flash_type=1):
         self.killProcess = False
         BASH_TIPS = dict(NORMAL='\033[0m',BOLD='\033[1m',DIM='\033[2m',UNDERLINE='\033[4m',
                             DEFAULT='\033[0m', RED='\033[31m', YELLOW='\033[33m', GREEN='\033[32m',
@@ -1111,7 +1111,7 @@ class KFlash:
             parser = argparse.ArgumentParser()
             parser.add_argument("-p", "--port", help="COM Port", default="DEFAULT")
             parser.add_argument("-f", "--flash", help="SPI Flash type, 0 for SPI3, 1 for SPI0", default=1)
-            parser.add_argument("-b", "--baudrate", type=int, help="UART baudrate for uploading firmware", default=115200)
+            parser.add_argument("-b", "--baudrate", type=int, help="UART baudrate for uploading firmware", default=1500000)
             parser.add_argument("-l", "--bootloader", help="Bootloader bin path", required=False, default=None)
             parser.add_argument("-k", "--key", help="AES key in hex, if you need encrypt your firmware.", required=False, default=None)
             parser.add_argument("-v", "--version", help="Print version.", action='version', version='0.8.3')
@@ -1126,7 +1126,7 @@ class KFlash:
         else:
             args = argparse.Namespace()
             setattr(args, "port", "DEFAULT")
-            setattr(args, "flash", 1)
+            setattr(args, "flash", flash_type)
             setattr(args, "baudrate", 115200)
             setattr(args, "bootloader", None)
             setattr(args, "key", None)
@@ -1141,6 +1141,7 @@ class KFlash:
         if not terminal:
             args.port = dev
             args.baudrate = baudrate
+            args.flash = flash_type
             args.noansi = noansi
             args.sram = sram
             args.Board = board
