@@ -7,6 +7,7 @@ import urllib.request
 import webbrowser
 import zipfile
 from typing import List, Optional
+import time
 
 from flask import Flask, jsonify, render_template_string, request
 from werkzeug.utils import secure_filename
@@ -164,6 +165,9 @@ HOME_PAGE = """
       outline: none;
       transition: border 0.15s ease, box-shadow 0.15s ease;
     }
+    option {
+      background: #23263f;
+    }
     input:focus, select:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(84, 214, 197, 0.15);
@@ -314,7 +318,7 @@ HOME_PAGE = """
       <div class="field" style="margin-top:12px;">
         <div class="inline-actions" style="justify-content: space-between;">
           <div style="display:flex; align-items:center; gap:10px;">
-            <div style="font-weight:700;">Release Krux</div>
+            <div style="font-weight:700;">Krux Release from Github</div>
             <span class="badge" id="kruxBadge">Não baixado</span>
           </div>
           <button type="button" class="ghost-btn" id="kruxDownload">Baixar release</button>
@@ -327,31 +331,38 @@ HOME_PAGE = """
           <option value="">Selecione após baixar o pacote</option>
         </select>
         <div class="controls" style="margin-top:6px;">
-          <button type="button" class="cta" id="kruxFlash">Flash Krux release</button>
-          <span class="muted" id="kruxInfo">Use este atalho para baixar e flashear o firmware oficial Krux localmente.</span>
+          <button type="button" class="cta" id="kruxFlash">Flash the Release →</button>
+          <span class="muted" id="kruxInfo">Use este botão para baixar e flashear o firmware oficial do Github da Krux.</span>
         </div>
       </div>
 
       <form id="flashForm">
         <div class="grid">
-          <div class="field file-field">
-            <button type="button" class="file-trigger" id="pickFile">Selecionar firmware</button>
-            <span class="file-name" id="fileName"></span>
-            <input type="file" id="firmware" name="firmware" accept=".bin,.kfpkg,.zip,.elf" required style="display:none">
-          </div>
           <div class="field">
-            <label for="port">Porta serial</label>
-            <select id="port" name="port">
-              <option value="auto">Auto (detectar)</option>
-            </select>
-            <span class="muted" id="portHint">Use "Auto" ou escolha uma COM específica.</span>
+            <div style="font-weight:700;">Arquivo firmware da Krux</div>
+            <div class="field file-field">
+              <button type="button" class="file-trigger" id="pickFile">Selecionar firmware</button>
+              <span class="file-name" id="fileName"></span>
+              <input type="file" id="firmware" name="firmware" accept=".bin,.kfpkg,.zip,.elf" required style="display:none">
+            </div>
+            <div class="field">
+              <label for="port">Porta serial</label>
+              <select id="port" name="port">
+                <option value="auto">Auto (detectar)</option>
+              </select>
+              <span class="muted" id="portHint">Use "Auto" ou escolha uma COM específica.</span>
+            </div>
+            <div class="controls" style="margin-top:6px;">
+              <button type="submit" class="cta">Flash arquivo firmware →</button>
+              <span class="muted" id="kruxInfo">Use este botão para flashear o arquivo selecionado.</span>
+            </div>
+            
           </div>
         </div>
 
         <div class="actions-bar">
           <div class="status" id="status"><span class="dot" id="dot"></span><span id="statusText">Pronto.</span></div>
           <div style="display:flex; gap:10px;">
-            <button type="submit" class="cta">Flash firmware →</button>
             <button type="reset" class="ghost-btn" id="clearLog">Limpar log</button>
           </div>
         </div>
@@ -423,7 +434,7 @@ HOME_PAGE = """
         });
       }
       kruxFlashBtn.disabled = !boards.length;
-      kruxInfo.textContent = boards.length ? `Placas disponíveis: ${boards.map(b => b.name).join(', ')}` : 'Faça o download do pacote Krux para listar as placas.';
+      # kruxInfo.textContent = boards.length ? `Placas disponíveis: ${boards.map(b => b.name).join(', ')}` : 'Faça o download do pacote Krux para listar as placas.';
     }
 
     async function loadKruxStatus(version) {
